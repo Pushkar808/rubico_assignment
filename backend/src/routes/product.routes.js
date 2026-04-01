@@ -49,6 +49,16 @@ router.put(
   ctrl.update
 );
 
+router.patch(
+  '/:id',
+  authenticate,
+  requireOrgMember,
+  requireOrgRole('admin', 'member', 'owner'),
+  validateParams(v.uuidParam),
+  validateBody(v.update),
+  ctrl.update
+);
+
 router.delete(
   '/:id',
   authenticate,

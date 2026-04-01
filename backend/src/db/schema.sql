@@ -61,7 +61,7 @@ CREATE TABLE IF NOT EXISTS events (
   image_url            VARCHAR(500),
   status               VARCHAR(50)   DEFAULT 'published',
   search_vector        TSVECTOR,
-  embedding            VECTOR(1536),
+  embedding            VECTOR(768),
   likes_count          INTEGER       DEFAULT 0,
   saves_count          INTEGER       DEFAULT 0,
   created_at           TIMESTAMPTZ   DEFAULT NOW(),
@@ -83,7 +83,7 @@ CREATE TABLE IF NOT EXISTS products (
   image_url      VARCHAR(500),
   status         VARCHAR(50)   DEFAULT 'active',
   search_vector  TSVECTOR,
-  embedding      VECTOR(1536),
+  embedding      VECTOR(768),
   likes_count    INTEGER       DEFAULT 0,
   saves_count    INTEGER       DEFAULT 0,
   created_at     TIMESTAMPTZ   DEFAULT NOW(),
@@ -246,3 +246,32 @@ $$ LANGUAGE plpgsql;
 CREATE OR REPLACE TRIGGER trigger_interaction_counts
   AFTER INSERT OR DELETE ON interactions
   FOR EACH ROW EXECUTE FUNCTION update_item_counts();
+
+-- ─────────────────────────────────────────────────────────────────────────────
+-- EMBEDDING DIMENSION MIGRATION → 3072 for Google gemini-embedding-001
+-- Safe to run multiple times
+-- ─────────────────────────────────────────────────────────────────────────────
+DO $$
+BEGIN
+  -- events.embedding
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_name = 'events' AND column_name = 'embedding'
+  ) THEN
+    DROP INDEX IF EXISTS idx_events_embedding;
+    ALTER TABLE events ALTER COLUMN embedding TYPE VECTOR(768);
+    CREATE INDEX IF NOT EXISTS idx_events_embedding
+      ON events USING ivfflat (embedding vector_cosine_ops) WITH (lists = 100);
+  END IF;
+
+  -- products.embedding
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_name = 'products' AND column_name = 'embedding'
+  ) THEN
+    DROP INDEX IF EXISTS idx_products_embedding;
+    ALTER TABLE products ALTER COLUMN embedding TYPE VECTOR(768);
+    CREATE INDEX IF NOT EXISTS idx_products_embedding
+      ON products USING ivfflat (embedding vector_cosine_ops) WITH (lists = 100);
+  END IF;
+END $$;

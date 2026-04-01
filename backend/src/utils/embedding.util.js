@@ -2,32 +2,53 @@
 
 const { env } = require('../config/env');
 
-let openaiClient = null;
+let genaiClient = null;
 
-function getOpenAIClient() {
-  if (!env.openai.apiKey) return null;
-  if (!openaiClient) {
-    const { OpenAI } = require('openai');
-    openaiClient = new OpenAI({ apiKey: env.openai.apiKey });
+function getClient() {
+  if (!env.googleAI.apiKey) return null;
+  if (!genaiClient) {
+    const { GoogleGenerativeAI } = require('@google/generative-ai');
+    genaiClient = new GoogleGenerativeAI(env.googleAI.apiKey);
   }
-  return openaiClient;
+  return genaiClient;
 }
 
 /**
- * Generates a 1536-dim embedding for the given text using OpenAI.
- * Returns null if no API key is configured (graceful degradation).
+ * Generates a 3072-dim embedding for a document (event/product) using gemini-embedding-001.
+ * Returns null if no API key is configured (graceful degradation to full-text search).
  */
 async function generateEmbedding(text) {
-  const client = getOpenAIClient();
+  const client = getClient();
   if (!client) return null;
 
-  const truncated = text.slice(0, 8000); // stay within token limits
-  const response = await client.embeddings.create({
-    model: 'text-embedding-ada-002',
-    input: truncated,
+  const model = client.getGenerativeModel({ model: 'gemini-embedding-001' });
+  const truncated = text.slice(0, 8000);
+  const result = await model.embedContent({
+    content: { parts: [{ text: truncated }] },
+    taskType: 'RETRIEVAL_DOCUMENT',
+    outputDimensionality: 768,
   });
 
-  return response.data[0].embedding;
+  return result.embedding.values;
+}
+
+/**
+ * Generates a 3072-dim embedding for a search query using gemini-embedding-001.
+ * Uses RETRIEVAL_QUERY task type for better semantic matching.
+ */
+async function generateQueryEmbedding(text) {
+  const client = getClient();
+  if (!client) return null;
+
+  const model = client.getGenerativeModel({ model: 'gemini-embedding-001' });
+  const truncated = text.slice(0, 2000);
+  const result = await model.embedContent({
+    content: { parts: [{ text: truncated }] },
+    taskType: 'RETRIEVAL_QUERY',
+    outputDimensionality: 768,
+  });
+
+  return result.embedding.values;
 }
 
 /**
@@ -48,7 +69,7 @@ function buildEmbeddingText(item) {
  * Whether semantic vector search is available.
  */
 function isSemanticSearchEnabled() {
-  return Boolean(env.openai.apiKey);
+  return Boolean(env.googleAI.apiKey);
 }
 
-module.exports = { generateEmbedding, buildEmbeddingText, isSemanticSearchEnabled };
+module.exports = { generateEmbedding, generateQueryEmbedding, buildEmbeddingText, isSemanticSearchEnabled };

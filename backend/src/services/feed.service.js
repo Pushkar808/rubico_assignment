@@ -69,7 +69,7 @@ async function getFeed(userId, { page = 1, limit = 20, type, category, sort = 'c
         e.tags, e.image_url, e.likes_count, e.saves_count,
         e.price, e.status, e.created_at, e.updated_at,
         e.start_date, e.end_date, e.location, e.is_virtual,
-        e.registered_count, NULL::numeric AS stock,
+        e.registered_count, e.capacity AS total_stock,
         o.id AS org_id, o.name AS org_name, o.logo_url AS org_logo
       FROM events e
       JOIN organizations o ON o.id = e.org_id
@@ -92,7 +92,7 @@ async function getFeed(userId, { page = 1, limit = 20, type, category, sort = 'c
         p.price, p.status, p.created_at, p.updated_at,
         NULL::timestamptz AS start_date, NULL::timestamptz AS end_date,
         NULL AS location, false AS is_virtual,
-        NULL::integer AS registered_count, p.stock,
+        NULL::integer AS registered_count, p.stock AS total_stock,
         o.id AS org_id, o.name AS org_name, o.logo_url AS org_logo
       FROM products p
       JOIN organizations o ON o.id = p.org_id

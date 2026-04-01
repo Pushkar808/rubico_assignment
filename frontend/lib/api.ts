@@ -136,7 +136,7 @@ export const searchApi = {
 // ── Interactions ───────────────────────────────────────────────────────────────
 export const interactionApi = {
   toggle: (data: { item_type: 'event' | 'product'; item_id: string; interaction_type: 'like' | 'save' | 'register' }) =>
-    api.post('/interactions', data),
+    api.post('/interactions/toggle', data),
   getUserInteractions: (params?: Record<string, unknown>) =>
     api.get('/interactions/me', { params }),
 };

@@ -2,7 +2,7 @@
 
 const natural = require('natural');
 const { query } = require('../config/database');
-const { generateEmbedding, isSemanticSearchEnabled } = require('../utils/embedding.util');
+const { generateQueryEmbedding, isSemanticSearchEnabled } = require('../utils/embedding.util');
 const { getUserInteractions } = require('./interaction.service');
 
 const tokenizer = new natural.WordTokenizer();
@@ -121,7 +121,7 @@ async function _textSearch(rawQuery, { page, limit, offset, type, userId }) {
 // ─── Semantic / vector search (requires OpenAI) ───────────────────────────────
 
 async function _semanticSearch(rawQuery, { page, limit, offset, type, userId }) {
-  const embedding = await generateEmbedding(rawQuery);
+  const embedding = await generateQueryEmbedding(rawQuery);
   if (!embedding) return _textSearch(rawQuery, { page, limit, offset, type, userId });
 
   const formatted = `[${embedding.join(',')}]`;

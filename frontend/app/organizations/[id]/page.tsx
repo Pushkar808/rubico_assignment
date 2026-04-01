@@ -119,6 +119,12 @@ export default function OrgDetailPage() {
     setEventModal(true);
   };
 
+  const toISOOrUndefined = (val: string) => {
+    if (!val) return undefined;
+    const d = new Date(val);
+    return isNaN(d.getTime()) ? undefined : d.toISOString();
+  };
+
   const saveEvent = async () => {
     if (!eventForm.title.trim()) { toast.error('Title is required'); return; }
     setSavingEvent(true);
@@ -128,6 +134,8 @@ export default function OrgDetailPage() {
         tags: eventForm.tags ? eventForm.tags.split(',').map((t) => t.trim()).filter(Boolean) : [],
         price: Number(eventForm.price) || 0,
         capacity: eventForm.capacity ? Number(eventForm.capacity) : null,
+        start_date: toISOOrUndefined(eventForm.start_date),
+        end_date: toISOOrUndefined(eventForm.end_date),
       };
       if (editingEvent) {
         await eventApi.update(orgId, editingEvent.id, payload);

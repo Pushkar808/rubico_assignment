@@ -21,13 +21,15 @@ const getOne = asyncHandler(async (req, res) => {
 });
 
 const update = asyncHandler(async (req, res) => {
-  await productService.verifyOwnership(req.params.id, req.params.orgId);
+  const orgId = req.orgId || req.params.orgId;
+  await productService.verifyOwnership(req.params.id, orgId);
   const product = await productService.update(req.params.id, req.body);
   sendSuccess(res, { product });
 });
 
 const remove = asyncHandler(async (req, res) => {
-  await productService.verifyOwnership(req.params.id, req.params.orgId);
+  const orgId = req.orgId || req.params.orgId;
+  await productService.verifyOwnership(req.params.id, orgId);
   await productService.remove(req.params.id);
   sendSuccess(res, null, 'Product deleted');
 });

@@ -54,6 +54,7 @@ async function requireOrgMember(req, res, next) {
     }
 
     req.orgRole = result.rows[0].role;
+    req.orgId = orgId;
     next();
   } catch (err) {
     next(err);

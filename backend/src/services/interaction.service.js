@@ -24,7 +24,8 @@ async function toggle(userId, itemType, itemId, interactionType) {
 
   // Verify item exists
   const table = itemType === 'event' ? 'events' : 'products';
-  const itemResult = await query(`SELECT id, capacity, registered_count FROM ${table} WHERE id = $1`, [itemId]);
+  const type = itemType === 'event' ? 'capacity' : 'stock';
+  const itemResult = await query(`SELECT id, ${type} ${itemType==='event'?', registered_count':''} FROM ${table} WHERE id = $1`, [itemId]);
   if (itemResult.rows.length === 0) {
     const err = new Error(`${itemType} not found`);
     err.status = 404;
@@ -34,7 +35,7 @@ async function toggle(userId, itemType, itemId, interactionType) {
   // Check capacity for event registration
   if (interactionType === 'register') {
     const item = itemResult.rows[0];
-    if (item.capacity !== null && item.registered_count >= item.capacity) {
+    if (item[type] !== null && item?.registered_count >= item[type]) {
       const err = new Error('Event is at full capacity');
       err.status = 409;
       throw err;

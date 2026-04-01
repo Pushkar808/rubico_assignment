@@ -21,18 +21,25 @@ const env = {
   PORT: parseInt(process.env.PORT, 10) || 5000,
   IS_PRODUCTION: process.env.NODE_ENV === 'production',
   IS_TEST: process.env.NODE_ENV === 'test',
-
-  db: {
-    host: process.env.DB_HOST,
-    port: parseInt(process.env.DB_PORT, 10) || 5432,
-    database: process.env.DB_NAME || 'postgres',
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : false,
-    max: parseInt(process.env.DB_POOL_MAX, 10) || 20,
-    idleTimeoutMillis: 30000,
-    connectionTimeoutMillis: 10000,
-  },
+  db: process.env.DATABASE_URL
+    ? {
+        connectionString: process.env.DATABASE_URL,
+        ssl: { rejectUnauthorized: false },
+        max: parseInt(process.env.DB_POOL_MAX, 10) || 20,
+        idleTimeoutMillis: 30000,
+        connectionTimeoutMillis: 10000,
+      }
+    : {
+        host: process.env.DB_HOST,
+        port: parseInt(process.env.DB_PORT, 10) || 5432,
+        database: process.env.DB_NAME || 'postgres',
+        user: process.env.DB_USER,
+        password: process.env.DB_PASSWORD,
+        ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : false,
+        max: parseInt(process.env.DB_POOL_MAX, 10) || 20,
+        idleTimeoutMillis: 30000,
+        connectionTimeoutMillis: 10000,
+      },
 
   jwt: {
     secret: process.env.JWT_SECRET,
@@ -41,8 +48,8 @@ const env = {
     refreshExpiresIn: process.env.JWT_REFRESH_EXPIRES_IN || '7d',
   },
 
-  openai: {
-    apiKey: process.env.OPENAI_API_KEY || null,
+  googleAI: {
+    apiKey: process.env.GOOGLE_AI_API_KEY || null,
   },
 
   cors: {
