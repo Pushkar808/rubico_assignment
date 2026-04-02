@@ -39,16 +39,11 @@ export default function OrganizationsPage() {
 
   const fetchOrgs = async () => {
     setIsLoading(true);
-    try {
-      const res = await orgApi.myOrgs();
-      setOrgs(res.data.data?.organizations || res.data.data || []);
-    } catch {
       // fallback to all orgs
       try {
         const res = await orgApi.list();
         setOrgs(res.data.data?.organizations || []);
-      } catch { /* noop */ }
-    } finally {
+      } catch { /* noop */ } finally {
       setIsLoading(false);
     }
   };

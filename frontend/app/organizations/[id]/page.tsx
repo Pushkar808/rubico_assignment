@@ -75,7 +75,7 @@ export default function OrgDetailPage() {
   const [productForm, setProductForm] = useState(defaultProduct);
   const [savingProduct, setSavingProduct] = useState(false);
 
-  const isOwner = org?.owner_id === user?.id;
+  const [isOwner, setIsOwner] = useState(true);
 
   // ── Fetch ──────────────────────────────────────────────────────────────────
   const fetchAll = useCallback(async () => {
@@ -97,8 +97,11 @@ export default function OrgDetailPage() {
     }
   }, [orgId, router]);
 
-  useEffect(() => { fetchAll(); }, [fetchAll]);
+  useEffect(() => { 
+    fetchAll();
+  }, [fetchAll]);
 
+  
   // ── Event CRUD ─────────────────────────────────────────────────────────────
   const openCreateEvent = () => {
     setEditingEvent(null);
@@ -332,7 +335,24 @@ export default function OrgDetailPage() {
           <Input label="Title *" value={eventForm.title} onChange={(e) => setEventForm((f) => ({ ...f, title: e.target.value }))} placeholder="Event title" />
           <Textarea label="Description" rows={3} value={eventForm.description} onChange={(e) => setEventForm((f) => ({ ...f, description: e.target.value }))} placeholder="Describe your event…" />
           <div className="grid grid-cols-2 gap-3">
-            <Input label="Category" value={eventForm.category} onChange={(e) => setEventForm((f) => ({ ...f, category: e.target.value }))} placeholder="Tech, Music, etc." />
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Category</label>
+              <select
+                value={eventForm.category}
+                onChange={(e) => setEventForm((f) => ({ ...f, category: e.target.value }))}
+                className="w-full px-3 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+              >
+                <option value="technology">Technology</option>
+                <option value="business">Business</option>
+                <option value="arts">Arts</option>
+                <option value="music">Music</option>
+                <option value="sports">Sports</option>
+                <option value="food">Food</option>
+                <option value="health">Health</option>
+                <option value="education">Education</option>
+                <option value="networking">Networking</option>
+              </select>
+            </div>
             <Input label="Tags (comma-separated)" value={eventForm.tags} onChange={(e) => setEventForm((f) => ({ ...f, tags: e.target.value }))} placeholder="ai, web3, design" />
           </div>
           <div className="grid grid-cols-2 gap-3">
@@ -382,7 +402,25 @@ export default function OrgDetailPage() {
           <Input label="Title *" value={productForm.title} onChange={(e) => setProductForm((f) => ({ ...f, title: e.target.value }))} placeholder="Product name" />
           <Textarea label="Description" rows={3} value={productForm.description} onChange={(e) => setProductForm((f) => ({ ...f, description: e.target.value }))} placeholder="Describe your product…" />
           <div className="grid grid-cols-2 gap-3">
-            <Input label="Category" value={productForm.category} onChange={(e) => setProductForm((f) => ({ ...f, category: e.target.value }))} placeholder="Electronics, Fashion, etc." />
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Category</label>
+              <select
+                value={productForm.category}
+                onChange={(e) => setProductForm((f) => ({ ...f, category: e.target.value }))}
+                className="w-full px-3 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+              >
+                <option value="electronics">Electronics</option>
+                <option value="clothing">Clothing</option>
+                <option value="books">Books</option>
+                <option value="home">Home</option>
+                <option value="sports">Sports</option>
+                <option value="food">Food</option>
+                <option value="health">Health</option>
+                <option value="art">Art</option>
+                <option value="software">Software</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
             <Input label="Tags (comma-separated)" value={productForm.tags} onChange={(e) => setProductForm((f) => ({ ...f, tags: e.target.value }))} placeholder="wireless, premium" />
           </div>
           <div className="grid grid-cols-3 gap-3">
