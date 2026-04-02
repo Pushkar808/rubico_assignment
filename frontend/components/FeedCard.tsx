@@ -175,11 +175,11 @@ export function FeedCard({ item, onLike, onSave, onRegister, index = 0 }: FeedCa
                   'px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all',
                   item.is_registered
                     ? 'bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400'
-                    : `bg-primary-600 hover:bg-primary-700 text-white ${item?.registered_count >= item.total_stock ? 'opacity-50 cursor-not-allowed ' : ''}`
+                    : `bg-primary-600 hover:bg-primary-700 text-white ${(item.registered_count && item.total_stock) && (item.registered_count >= item.total_stock) ? 'opacity-50 cursor-not-allowed ' : ''}`
                 )}
-                disabled={item.registered_count >= item.total_stock} 
+                disabled={!!(item.registered_count && item.total_stock && item.registered_count >= item.total_stock)}
               >
-                {item.is_registered ? 'Registered' : `${item.registered_count >= item.total_stock ? 'Registration Full' : 'Register'}`}
+                {item.is_registered ? 'Registered' : `${(item.registered_count && item.total_stock) && (item.registered_count >= item.total_stock) ? 'Registration Full' : 'Register'}`}
               </button>
             )}
           </div>
