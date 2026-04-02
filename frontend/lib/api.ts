@@ -102,7 +102,7 @@ export const eventApi = {
   create: (orgId: string, data: Record<string, unknown>) =>
     api.post(`/organizations/${orgId}/events`, data),
   update: (orgId: string, eventId: string, data: Record<string, unknown>) =>
-    api.patch(`/organizations/${orgId}/events/${eventId}`, data),
+    api.put(`/organizations/${orgId}/events/${eventId}`, data),
   delete: (orgId: string, eventId: string) =>
     api.delete(`/organizations/${orgId}/events/${eventId}`),
 };
