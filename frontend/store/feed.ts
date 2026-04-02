@@ -29,6 +29,7 @@ export interface FeedItem {
   status?: string;
   // product-specific
   stock?: number | null;
+  total_stock?: number ;
 }
 
 interface FeedState {
